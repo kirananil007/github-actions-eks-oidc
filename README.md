@@ -1,7 +1,7 @@
 # AWS EKS Cluster Creation with GitHub Actions and OIDC  
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kirananil007/<repo>/eks-cluster.yml?branch=main)  
-![License](https://img.shields.io/github/license/kirananil007/<repo>)  
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kirananil007/github-actions-eks-oidc/eks-cluster.yml?branch=main)  
+![License](https://img.shields.io/github/license/kirananil007/github-actions-eks-oidc)  
 
 ### Description
 
