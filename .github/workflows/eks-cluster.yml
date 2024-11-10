@@ -9,7 +9,6 @@ on:
         options:
           - create
           - delete
-          - deploy
 
 jobs:
   create-eks-cluster:
