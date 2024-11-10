@@ -1,11 +1,13 @@
 # AWS EKS Cluster Creation with GitHub Actions and OIDC  
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kirananil007/github-actions-eks-oidc/eks-cluster.yml?branch=main)  
-![License](https://img.shields.io/github/license/kirananil007/github-actions-eks-oidc)  
+![AWS_Github_OIDC](./images/aws_eks_github_oidc.jpg)
 
 ### Description
 
 This repository demonstrates how to securely create an Amazon EKS cluster using GitHub Actions and OpenID Connect (OIDC) for authentication with AWS. By leveraging OIDC, we eliminate the need to manage and rotate long-term AWS credentials, enhancing both security and simplicity.  
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/kirananil007/github-actions-eks-oidc/eks-cluster.yml?branch=main)  
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) 
 
 ### Features
 
