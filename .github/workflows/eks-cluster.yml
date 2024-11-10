@@ -1,0 +1,95 @@
+name: Create EKS Cluster
+
+on:
+  workflow_dispatch:  # Allows you to manually trigger the workflow
+    inputs:
+      action:
+        description: 'Choose the action to perform (create or delete)'
+        type: choice
+        options:
+          - create
+          - delete
+          - deploy
+
+jobs:
+  create-eks-cluster:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OpenID Connect (OIDC)
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+            fetch-depth: 0
+
+      - name: Configure AWS Credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::1264593783264:role/aws_github_actions_role
+          aws-region: us-east-1
+
+      - name: get caller identity 1
+        run: |
+          aws sts get-caller-identity
+
+      - name: Install eksctl
+        run: |
+          ARCH=amd64
+          PLATFORM=$(uname -s)_$ARCH
+          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+          tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+          sudo mv /tmp/eksctl /usr/local/bin
+
+      - name: Verify eksctl Installation
+        run: |
+          eksctl version
+        
+
+      - name: Create EKS Cluster
+        if: ${{ github.event.inputs.action == 'create' }}
+        run: |
+          eksctl create cluster --name=kiran-eks-cluster \
+            --region=us-east-1 \
+            --zones=us-east-1a,us-east-1b \
+            --version 1.31 \
+            --without-nodegroup
+
+      - name: Associate OIDC to EKS Cluster
+        if: ${{ github.event.inputs.action == 'create' }}
+        run: |
+          eksctl utils associate-iam-oidc-provider \
+            --region us-east-1 \
+            --cluster kiran-eks-cluster \
+            --approve
+      
+      - name: Create EKS Cluster nodegroup
+        if: ${{ github.event.inputs.action == 'create' }}
+        run: |
+          eksctl create nodegroup --cluster=kiran-eks-cluster \
+            --region=us-east-1 \
+            --name=kiran-eks-cluster-ng-private \
+            --node-type=t3.medium \
+            --nodes-min=2 \
+            --nodes-max=3 \
+            --node-volume-size=20 \
+            --managed \
+            --asg-access \
+            --external-dns-access \
+            --full-ecr-access \
+            --appmesh-access \
+            --alb-ingress-access \
+            --node-private-networking
+
+      - name: Create EKS Cluster
+        if: ${{ github.event.inputs.action == 'create' }}
+        run: |
+          aws eks update-kubeconfig --name kiran-eks-cluster
+     
+      - name: Delete EKS Cluster
+        if: ${{ github.event.inputs.action == 'delete' }}
+        run: |
+            eksctl delete cluster kiran-eks-cluster --region us-east-1
+            eksctl delete nodegroup kiran-eks-cluster-ng-private --all
